@@ -1,8 +1,8 @@
 'use strict';
 
 const $ = (selector) => document.querySelector(selector);
-const colours = { upper: '#f3cb79', lower: '#c6f582', single: '#75dfce' };
-const tierNames = { upper: 'Upper tier', lower: 'Lower tier', single: 'Single tier' };
+const colours = { CMSM: '#b6b0ff', DSSAB: '#81c8fa', upper: '#f3cb79', lower: '#c6f582', single: '#75dfce' };
+const tierNames = { CMSM: 'CMSM', DSSAB: 'DSSAB', upper: 'Upper tier', lower: 'Lower tier', single: 'Single tier' };
 const map = L.map('map', { zoomControl: false, preferCanvas: true, scrollWheelZoom: false })
   .setView([49.1, -85], 5);
 L.control.zoom({ position: 'topright' }).addTo(map);
@@ -22,7 +22,13 @@ const dark = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}
   maxZoom: 19
 });
 const boundaries = L.featureGroup().addTo(map);
-const entries = new Map();
+const level = $('#level');
+const datasets = new Map();
+let entries = new Map();
+let levelVersion = 0;
+function areaPlural() {
+  return level.value === 'service' ? 'service areas' : 'municipalities';
+}
 let activeTier = 'all';
 let selected;
 let mapLabel;
@@ -114,8 +120,8 @@ function renderResults() {
   status.textContent = matches.length
     ? query
       ? matches.length + (matches.length === 1 ? ' match. ' : ' matches. ') + 'Select a result to zoom.'
-      : 'Showing ' + matches.length + ' of ' + entries.size + ' municipalities'
-    : 'No municipalities found. Try another name.';
+      : 'Showing ' + matches.length + ' of ' + entries.size + ' ' + areaPlural()
+    : 'No ' + areaPlural() + ' found. Try another name.';
 }
 
 function renderMap() {
@@ -178,15 +184,16 @@ for (const button of tierButtons) {
   button.onclick = () => { if (entries.size) setTier(button.dataset.tier); };
 }
 
-async function load() {
-  const response = await fetch('municipalities.geojson');
+async function readLayer(filename) {
+  const response = await fetch(filename);
   if (!response.ok) throw new Error('Boundary download returned ' + response.status);
   const data = await response.json();
-  provinceBounds = L.latLngBounds([]);
+  const records = new Map();
+  const bounds = L.latLngBounds([]);
   for (const feature of data.features) {
     const props = feature.properties;
     const layer = L.geoJSON(feature, { style: style(props.tier, false) });
-    provinceBounds.extend(layer.getBounds());
+    bounds.extend(layer.getBounds());
     const item = document.createElement('li');
     const button = document.createElement('button');
     const label = document.createElement('span');
@@ -204,26 +211,61 @@ async function load() {
       select(entry, false);
       button.scrollIntoView({ block: 'nearest', container: 'nearest' });
     });
-    entries.set(feature.id, entry);
+    records.set(feature.id, entry);
   }
-  download.disabled = false;
-  download.onclick = () => {
-    const link = document.createElement('a');
-    link.href = 'municipalities.geojson';
-    link.download = 'ontario-municipal-boundaries.geojson';
-    link.click();
-  };
-  search.disabled = false;
-  renderResults();
-  renderMap();
+  return { records, bounds };
+}
+
+const files = { municipal: 'municipalities.geojson', service: 'service-managers.geojson' };
+
+async function showLevel(initialView = false) {
+  const version = ++levelVersion;
+  const key = level.value;
+  const service = key === 'service';
+  map.stop();
+  select(undefined, false);
+  entries = new Map();
+  provinceBounds = undefined;
+  boundaries.clearLayers();
+  search.value = '';
+  search.disabled = download.disabled = searchSubmit.disabled = true;
+  clearSearch.hidden = true;
+  list.replaceChildren();
+  search.setAttribute('aria-label', service ? 'Search service manager by name' : 'Search municipality by name');
+  list.setAttribute('aria-label', service ? 'Service managers' : 'Municipalities');
+  $('.stats').hidden = service;
+  $('#source-note').hidden = service;
+  $('#manager-source').hidden = !service;
+  status.textContent = 'Loading boundaries…';
+  level.disabled = false;
+  let dataset = datasets.get(key);
+  try {
+    if (!dataset) {
+      dataset = await readLayer(files[key]);
+      datasets.set(key, dataset);
+    }
+  } catch (error) {
+    if (version === levelVersion) status.textContent = 'Boundaries could not be loaded. Switch layers or refresh to retry.';
+    console.error(error);
+    return;
+  }
+  if (version !== levelVersion) return;
+  entries = dataset.records;
+  provinceBounds = dataset.bounds;
+  search.disabled = download.disabled = false;
+  setTier('all');
   const initial = entries.get('lower-21024');
-  if (initial) {
+  if (initialView && initial) {
     map.fitBounds(initial.layer.getBounds(), { padding: [42, 62], maxZoom: 11, animate: false });
     select(initial, false);
   } else fitOntario();
 }
 
-load().catch((error) => {
-  console.error(error);
-  status.textContent = 'Boundaries could not be loaded. Refresh to try again.';
-});
+level.onchange = () => showLevel();
+download.onclick = () => {
+  const link = document.createElement('a');
+  link.href = files[level.value];
+  link.download = 'ontario-' + files[level.value];
+  link.click();
+};
+showLevel(true);

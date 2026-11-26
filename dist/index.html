@@ -11,7 +11,8 @@
 <div class="intro"><h1>Boundary explorer</h1><button id="download" disabled><span aria-hidden="true">↓</span> Export GeoJSON</button></div>
 <section class="work" aria-label="Municipal boundary explorer">
 <aside>
-<div class="directory"><h2>Municipal directory</h2>
+<div class="directory"><label class="level-label" for="level">Boundary layer</label>
+<select id="level" disabled><option value="municipal">Municipalities</option><option value="service">Service managers</option></select>
 <form id="search-form" role="search"><label class="search">
 <svg aria-hidden="true" viewBox="0 0 24 24"><circle cx="10" cy="10" r="6"/><path d="m15 15 5 5"/></svg>
 <input id="search" type="search" aria-label="Search municipality by name" placeholder="Search by name…" autocomplete="off" disabled>
@@ -31,5 +32,5 @@
 <button data-tier="single" aria-pressed="false"><img class="coverage" alt="" src="coverage-single.png"><span><i class="single"></i>Single tier</span><strong>173</strong><small>Independent municipalities</small></button>
 <button data-tier="upper" aria-pressed="false"><img class="coverage" alt="" src="coverage-upper.png"><span><i class="upper"></i>Upper tier</span><strong>30</strong><small>Counties and regions</small></button>
 </section>
-<footer><a href="https://data.ontario.ca/dataset/municipal-boundaries" target="_blank" rel="noopener">Land Information Ontario ↗</a><span>Generalized municipal boundaries</span></footer>
+<footer><a href="https://data.ontario.ca/dataset/municipal-boundaries" target="_blank" rel="noopener">Land Information Ontario ↗</a><span id="source-note">Generalized municipal boundaries</span><span id="manager-source" hidden>Generalized boundaries exclude First Nations reserves. Source: <a href="https://services1.arcgis.com/LwvKNS3IAgAsnCih/ArcGIS/rest/services/CMSM/FeatureServer/0" target="_blank" rel="noopener">MMAH · CMSM/DSSAB ↗</a></span></footer>
 </main></body></html>
