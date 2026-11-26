@@ -12,7 +12,7 @@
 <section class="work" aria-label="Municipal boundary explorer">
 <aside>
 <div class="directory"><label class="level-label" for="level">Boundary layer</label>
-<select id="level" disabled><option value="municipal">Municipalities</option><option value="service">Service managers</option></select>
+<select id="level" disabled><option value="both" selected>Both layers · overlap</option><option value="municipal">Municipalities</option><option value="service">Service managers</option></select>
 <form id="search-form" role="search"><label class="search">
 <svg aria-hidden="true" viewBox="0 0 24 24"><circle cx="10" cy="10" r="6"/><path d="m15 15 5 5"/></svg>
 <input id="search" type="search" aria-label="Search municipality by name" placeholder="Search by name…" autocomplete="off" disabled>
@@ -21,8 +21,9 @@
 <ul id="list" aria-label="Municipalities"></ul>
 </aside>
 <div class="map-panel">
-<div id="map" aria-label="Interactive satellite map of Ontario municipalities"></div>
+<div id="map" aria-label="Interactive map of Ontario boundary layers"></div>
 <div class="map-tools"><button id="basemap" aria-pressed="true">Satellite</button><button id="reset">Fit Ontario</button></div>
+<div id="overlap-legend" hidden><span>Municipal boundary</span><span>Service manager</span></div>
 <div id="selection" class="selection" hidden></div>
 </div>
 </section>

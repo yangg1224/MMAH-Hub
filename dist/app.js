@@ -27,6 +27,7 @@ const datasets = new Map();
 let entries = new Map();
 let levelVersion = 0;
 function areaPlural() {
+  if (level.value === 'both') return 'boundaries';
   return level.value === 'service' ? 'service areas' : 'municipalities';
 }
 let activeTier = 'all';
@@ -48,6 +49,16 @@ function normalize(text) {
 }
 
 function style(tier, highlighted) {
+  if (level.value === 'both') {
+    const manager = tier === 'CMSM' || tier === 'DSSAB';
+    const color = manager ? '#d8b1ff' : '#d6f59c';
+    return {
+      color, fillColor: color, opacity: highlighted ? 1 : 0.88,
+      weight: manager ? 3.5 : highlighted ? 3 : 1.4,
+      dashArray: manager ? '8 6' : null,
+      fill: !manager || highlighted, fillOpacity: highlighted ? 0.2 : 0.04
+    };
+  }
   return {
     color: highlighted ? '#e0ff99' : colours[tier],
     fillColor: highlighted ? '#c4ee73' : colours[tier],
@@ -84,7 +95,8 @@ function select(entry, zoom) {
   clear.setAttribute('aria-label', 'Clear selection');
   clear.onclick = () => select(undefined, false);
   selection.append(tierLabel, title, detail, clear);
-  entry.layer.setStyle(style(entry.tier, true)).bringToFront();
+  entry.layer.setStyle(style(entry.tier, true));
+  if (level.value !== 'both') entry.layer.bringToFront();
   entry.button.setAttribute('aria-current', 'true');
   if (zoom) {
     const bounds = entry.layer.getBounds();
@@ -95,6 +107,43 @@ function select(entry, zoom) {
       duration: 0.65
     });
   }
+}
+
+// GeoJSON polygon rings use longitude, latitude. Interior rings are holes.
+function containsPoint(geometry, point) {
+  const polygons = geometry.type === 'Polygon' ? [geometry.coordinates] : geometry.coordinates;
+  function inRing(ring) {
+    let inside = false;
+    for (let i = 0, j = ring.length - 1; i < ring.length; j = i++) {
+      const [x, y] = ring[i];
+      const [previousX, previousY] = ring[j];
+      if ((y > point.lat) !== (previousY > point.lat) &&
+          point.lng < (previousX - x) * (point.lat - y) / (previousY - y) + x) inside = !inside;
+    }
+    return inside;
+  }
+  return polygons.some(([outer, ...holes]) => inRing(outer) && !holes.some(inRing));
+}
+
+function inspectOverlap(point) {
+  const hits = [...entries.values()].filter(entry =>
+    entry.layer.getBounds().contains(point) && containsPoint(entry.feature.geometry, point));
+  if (!hits.length) return;
+  select(undefined, false);
+  selection.hidden = false;
+  const heading = document.createElement('small');
+  heading.textContent = 'Boundaries at this point';
+  const names = document.createElement('div');
+  for (const hit of hits) {
+    const line = document.createElement('p');
+    line.textContent = hit.shortName + ' · ' + tierNames[hit.tier];
+    names.append(line);
+  }
+  const close = document.createElement('button');
+  close.textContent = '×';
+  close.setAttribute('aria-label', 'Close boundary details');
+  close.onclick = () => select(undefined, false);
+  selection.append(heading, names, close);
 }
 
 function renderResults() {
@@ -134,7 +183,7 @@ function renderMap() {
     entry.layer.setStyle(style(entry.tier, selected === entry));
     boundaries.addLayer(entry.layer);
   }
-  if (selected) selected.layer.bringToFront();
+  if (selected && level.value !== 'both') selected.layer.bringToFront();
 }
 
 function setTier(tier) {
@@ -205,9 +254,13 @@ async function readLayer(filename) {
     button.append(label, tier);
     item.append(button);
     const searchNames = [props.shortName, props.name].map(normalize);
-    const entry = { ...props, item, button, layer, searchNames, searchText: searchNames.join(' ') };
+    const entry = { feature, ...props, item, button, layer, searchNames, searchText: searchNames.join(' ') };
     button.onclick = () => zoomTo(entry);
-    layer.on('click', () => {
+    layer.on('click', (event) => {
+      if (level.value === 'both') {
+        inspectOverlap(event.latlng);
+        return;
+      }
       select(entry, false);
       button.scrollIntoView({ block: 'nearest', container: 'nearest' });
     });
@@ -218,10 +271,22 @@ async function readLayer(filename) {
 
 const files = { municipal: 'municipalities.geojson', service: 'service-managers.geojson' };
 
+async function getDataset(key) {
+  if (!datasets.has(key)) {
+    datasets.set(key, readLayer(files[key]).catch(error => {
+      datasets.delete(key);
+      throw error;
+    }));
+  }
+  return datasets.get(key);
+}
+
 async function showLevel(initialView = false) {
   const version = ++levelVersion;
   const key = level.value;
   const service = key === 'service';
+  const both = key === 'both';
+  const keys = both ? ['municipal', 'service'] : [key];
   map.stop();
   select(undefined, false);
   entries = new Map();
@@ -231,39 +296,53 @@ async function showLevel(initialView = false) {
   search.disabled = download.disabled = searchSubmit.disabled = true;
   clearSearch.hidden = true;
   list.replaceChildren();
-  search.setAttribute('aria-label', service ? 'Search service manager by name' : 'Search municipality by name');
-  list.setAttribute('aria-label', service ? 'Service managers' : 'Municipalities');
-  $('.stats').hidden = service;
+  search.setAttribute('aria-label', both ? 'Search municipalities and service managers' : service ? 'Search service manager by name' : 'Search municipality by name');
+  list.setAttribute('aria-label', both ? 'Municipalities and service managers' : service ? 'Service managers' : 'Municipalities');
+  $('.stats').hidden = service || both;
   $('#source-note').hidden = service;
-  $('#manager-source').hidden = !service;
+  $('#manager-source').hidden = key === 'municipal';
+  $('#overlap-legend').hidden = !both;
   status.textContent = 'Loading boundaries…';
   level.disabled = false;
-  let dataset = datasets.get(key);
+  let loaded;
   try {
-    if (!dataset) {
-      dataset = await readLayer(files[key]);
-      datasets.set(key, dataset);
-    }
+    loaded = await Promise.all(keys.map(getDataset));
   } catch (error) {
     if (version === levelVersion) status.textContent = 'Boundaries could not be loaded. Switch layers or refresh to retry.';
     console.error(error);
     return;
   }
   if (version !== levelVersion) return;
-  entries = dataset.records;
-  provinceBounds = dataset.bounds;
+  provinceBounds = L.latLngBounds([]);
+  for (const dataset of loaded) {
+    provinceBounds.extend(dataset.bounds);
+    for (const [id, record] of dataset.records) entries.set(id, record);
+  }
   search.disabled = download.disabled = false;
   setTier('all');
   const initial = entries.get('lower-21024');
   if (initialView && initial) {
-    map.fitBounds(initial.layer.getBounds(), { padding: [42, 62], maxZoom: 11, animate: false });
+    const openingArea = [...entries.values()].find(entry => entry.tier === 'CMSM' && entry.shortName === 'Peel') || initial;
+    map.fitBounds(openingArea.layer.getBounds(), { padding: [42, 62], maxZoom: 11, animate: false });
     select(initial, false);
-  } else fitOntario();
+  } else if (initialView) fitOntario();
 }
 
 level.onchange = () => showLevel();
 download.onclick = () => {
   const link = document.createElement('a');
+  if (level.value === 'both') {
+    const features = [...entries.values()].map(entry => entry.feature);
+    const blob = new Blob([JSON.stringify({ type: 'FeatureCollection', features,
+      attribution: 'Land Information Ontario and MMAH; generalized municipal and CMSM/DSSAB boundaries.'
+    })], { type: 'application/geo+json' });
+    const url = URL.createObjectURL(blob);
+    link.href = url;
+    link.download = 'ontario-overlapping-boundaries.geojson';
+    link.click();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+    return;
+  }
   link.href = files[level.value];
   link.download = 'ontario-' + files[level.value];
   link.click();
