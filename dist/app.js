@@ -22,13 +22,17 @@ let activeTier = 'all';
 let selected;
 let provinceBounds;
 const search = $('#search');
+const searchSubmit = $('#search-submit');
+const clearSearch = $('#clear-search');
+const tierButtons = [...document.querySelectorAll('[data-tier]')];
+let matches = [];
 const status = $('#status');
 const list = $('#list');
 const selection = $('#selection');
 const download = $('#download');
 
 function normalize(text) {
-  return text.normalize('NFD').replace(/\p{Diacritic}/gu, '').toLowerCase().trim();
+  return text.normalize('NFD').replace(/\p{Diacritic}/gu, '').toLowerCase().replace(/[^\p{Letter}\p{Number}]+/gu, ' ').trim();
 }
 
 function style(tier, highlighted) {
@@ -61,17 +65,47 @@ function select(entry, zoom) {
   selection.append(title, detail, clear);
   entry.layer.setStyle(style(entry.tier, true)).bringToFront();
   entry.button.setAttribute('aria-current', 'true');
-  if (zoom) map.fitBounds(entry.layer.getBounds(), { padding: [35, 35], maxZoom: 11 });
+  if (zoom) {
+    const bounds = entry.layer.getBounds();
+    const center = bounds.getCenter();
+    const targetZoom = Math.min(12, map.getBoundsZoom(bounds, false, [56, 145]));
+    map.flyTo(center, targetZoom, {
+      animate: !window.matchMedia('(prefers-reduced-motion: reduce)').matches,
+      duration: 0.65
+    });
+  }
 }
 
-function render() {
+function renderResults() {
   const query = normalize(search.value);
-  const visible = [...entries.values()].filter((entry) =>
-    (activeTier === 'all' || entry.tier === activeTier) && entry.searchText.includes(query));
+  const terms = query.split(' ');
+  matches = [...entries.values()].filter((entry) =>
+    (query || activeTier === 'all' || entry.tier === activeTier) &&
+    terms.every((term) => entry.searchText.includes(term)));
+
+  if (query) {
+    const rank = (entry) => {
+      if (entry.searchNames.includes(query)) return 0;
+      if (entry.searchNames.some((name) => name.startsWith(query))) return 1;
+      return 2;
+    };
+    matches.sort((a, b) => rank(a) - rank(b));
+  }
+
+  list.replaceChildren(...matches.map((entry) => entry.item));
+  list.scrollTop = 0;
+  clearSearch.hidden = search.value.length === 0;
+  searchSubmit.disabled = !query || !matches.length;
+  status.textContent = matches.length
+    ? query
+      ? matches.length + (matches.length === 1 ? ' match. ' : ' matches. ') + 'Select a result to zoom.'
+      : 'Showing ' + matches.length + ' of ' + entries.size + ' municipalities'
+    : 'No municipalities found. Try another name.';
+}
+
+function renderMap() {
+  const visible = [...entries.values()].filter((entry) => activeTier === 'all' || entry.tier === activeTier);
   if (selected && !visible.includes(selected)) select(undefined, false);
-  const listItems = document.createDocumentFragment();
-  for (const entry of visible) listItems.append(entry.item);
-  list.replaceChildren(listItems);
   boundaries.clearLayers();
   // Upper-tier boundaries sit underneath local municipalities so both tiers remain discoverable.
   const drawingOrder = [...visible].sort((a, b) => Number(b.tier === 'upper') - Number(a.tier === 'upper'));
@@ -80,9 +114,23 @@ function render() {
     boundaries.addLayer(entry.layer);
   }
   if (selected) selected.layer.bringToFront();
-  status.textContent = visible.length
-    ? 'Showing ' + visible.length + ' of ' + entries.size + ' municipalities'
-    : 'No municipalities match your search.';
+}
+
+function setTier(tier) {
+  activeTier = tier;
+  for (const button of tierButtons) {
+    button.setAttribute('aria-pressed', String(button.dataset.tier === tier));
+  }
+  renderMap();
+  renderResults();
+}
+
+function zoomTo(entry) {
+  if (activeTier !== 'all' && activeTier !== entry.tier) setTier('all');
+  select(entry, true);
+  if (window.matchMedia('(max-width: 760px)').matches) {
+    $('.map-panel').scrollIntoView({ block: 'start' });
+  }
 }
 
 function fitOntario() {
@@ -97,19 +145,20 @@ $('#basemap').onclick = (event) => {
   event.currentTarget.textContent = wasSatellite ? 'Dark map' : 'Satellite';
   event.currentTarget.setAttribute('aria-pressed', String(!wasSatellite));
 };
-let searchTimer;
-search.addEventListener('input', () => {
-  clearTimeout(searchTimer);
-  searchTimer = setTimeout(() => { if (entries.size) render(); }, 120);
+search.addEventListener('input', renderResults);
+$('#search-form').addEventListener('submit', (event) => {
+  event.preventDefault();
+  if (!searchSubmit.disabled) zoomTo(matches[0]);
 });
-for (const button of document.querySelectorAll('[data-tier]')) {
-  button.onclick = () => {
-    activeTier = button.dataset.tier;
-    for (const option of document.querySelectorAll('[data-tier]')) {
-      option.setAttribute('aria-pressed', String(option === button));
-    }
-    if (entries.size) render();
-  };
+clearSearch.onclick = () => {
+  search.value = '';
+  renderResults();
+  select(undefined, false);
+  fitOntario();
+  search.focus();
+};
+for (const button of tierButtons) {
+  button.onclick = () => { if (entries.size) setTier(button.dataset.tier); };
 }
 
 async function load() {
@@ -131,8 +180,9 @@ async function load() {
     tier.textContent = tierNames[props.tier];
     button.append(label, tier);
     item.append(button);
-    const entry = { ...props, item, button, layer, searchText: normalize(props.name + ' ' + props.shortName + ' ' + props.id) };
-    button.onclick = () => select(entry, true);
+    const searchNames = [props.shortName, props.name].map(normalize);
+    const entry = { ...props, item, button, layer, searchNames, searchText: searchNames.join(' ') };
+    button.onclick = () => zoomTo(entry);
     layer.on('click', () => {
       select(entry, false);
       button.scrollIntoView({ block: 'nearest', container: 'nearest' });
@@ -146,7 +196,9 @@ async function load() {
     link.download = 'ontario-municipal-boundaries.geojson';
     link.click();
   };
-  render();
+  search.disabled = false;
+  renderResults();
+  renderMap();
   fitOntario();
 }
 
