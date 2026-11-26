@@ -1,33 +1,35 @@
 <!doctype html>
-<html lang="en">
-<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="Explore Ontario’s 444 municipal boundaries by name and tier."><title>Municipal Atlas · Ontario</title><link rel="stylesheet" href="leaflet.css"><link rel="stylesheet" href="style.css"><script defer src="leaflet.js"></script><script defer src="app.js"></script></head>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="Search and explore all 444 Ontario municipal boundaries.">
+<title>Boundary explorer · Municipal Atlas</title>
+<link rel="stylesheet" href="leaflet.css"><link rel="stylesheet" href="style.css">
+<script defer src="leaflet.js"></script><script defer src="app.js"></script></head>
 <body>
-<header><div class="brand"><span class="logo" aria-hidden="true">◇</span><div>Municipal Atlas<small>ONTARIO BOUNDARY EXPLORER</small></div></div><a href="https://data.ontario.ca/dataset/municipal-boundaries" target="_blank" rel="noopener">Data sources ↗</a></header>
+<header><div class="brand"><span class="logo" aria-hidden="true">≋</span>Municipal Atlas</div><span class="header-place">Ontario <span>/</span> Canada</span></header>
 <main>
-<section class="intro"><div><div class="eyebrow">ONTARIO, CANADA</div><h1>Municipal boundaries</h1><p>Explore Ontario’s municipalities by name, location and tier.</p></div><button id="download" disabled>↓ &nbsp; Download GeoJSON</button></section>
-<section class="stats" aria-label="Municipality counts">
-<button data-tier="all" aria-pressed="true"><span>All municipalities</span><strong>444</strong><small class="accent">Province-wide coverage</small></button>
-<button data-tier="upper" aria-pressed="false"><span><i class="upper"></i> Upper tier</span><strong>30</strong><small>Counties and regions</small></button>
-<button data-tier="lower" aria-pressed="false"><span><i class="lower"></i> Lower tier</span><strong>241</strong><small>Part of an upper tier</small></button>
-<button data-tier="single" aria-pressed="false"><span><i class="single"></i> Single tier</span><strong>173</strong><small>Independent municipalities</small></button>
-</section>
-<section class="work">
+<div class="intro"><h1>Boundary explorer</h1><button id="download" disabled><span aria-hidden="true">↓</span> Export GeoJSON</button></div>
+<section class="work" aria-label="Municipal boundary explorer">
 <aside>
-  <div class="directory">
-    <h2><label for="search">Find a municipality</label></h2>
-    <form id="search-form" role="search">
-      <div class="search">
-        <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="6"/><path d="m16 16 4 4"/></svg>
-        <input id="search" type="search" placeholder="e.g. Toronto" autocomplete="off" aria-describedby="status" disabled>
-        <button id="clear-search" type="button" aria-label="Clear search" hidden>×</button>
-      </div>
-      <button id="search-submit" disabled>Zoom</button>
-    </form>
-    <div id="status" role="status">Loading boundaries…</div>
-  </div>
-  <ul id="list" aria-label="Municipalities"></ul>
+<div class="directory"><h2>Municipal directory</h2>
+<form id="search-form" role="search"><label class="search">
+<svg aria-hidden="true" viewBox="0 0 24 24"><circle cx="10" cy="10" r="6"/><path d="m15 15 5 5"/></svg>
+<input id="search" type="search" aria-label="Search municipality by name" placeholder="Search by name…" autocomplete="off" disabled>
+</label><button type="button" id="clear-search" aria-label="Clear search" hidden>×</button><button id="search-submit" aria-label="Zoom to first match" title="Zoom to first match" disabled>↵</button></form>
+<div id="status" role="status">Loading boundaries…</div></div>
+<ul id="list" aria-label="Municipalities"></ul>
 </aside>
-<div class="map-panel"><div class="map-head"><h2>Boundary map</h2><div><button id="basemap" aria-pressed="true">Satellite</button> <button id="reset">Fit Ontario</button></div></div><div class="map-shell"><div id="map" aria-label="Interactive map of Ontario municipalities"></div><div class="legend"><span><i class="upper"></i> Upper tier</span><span><i class="lower"></i> Lower tier</span><span><i class="single"></i> Single tier</span></div><div class="selection" id="selection" hidden></div></div></div>
+<div class="map-panel">
+<div id="map" aria-label="Interactive satellite map of Ontario municipalities"></div>
+<div class="map-tools"><button id="basemap" aria-pressed="true">Satellite</button><button id="reset">Fit Ontario</button></div>
+<div id="selection" class="selection" hidden></div>
+</div>
 </section>
-<footer><span>Boundary source · Land Information Ontario</span><span>Geometry simplified for web display</span></footer>
+<section class="stats" aria-label="Filter by municipal tier">
+<button data-tier="all" aria-pressed="true"><img class="coverage" alt="" src="coverage-all.png"><span>All municipalities</span><strong>444</strong><small>Across Ontario</small></button>
+<button data-tier="lower" aria-pressed="false"><img class="coverage" alt="" src="coverage-lower.png"><span><i class="lower"></i>Lower tier</span><strong>241</strong><small>Local municipalities</small></button>
+<button data-tier="single" aria-pressed="false"><img class="coverage" alt="" src="coverage-single.png"><span><i class="single"></i>Single tier</span><strong>173</strong><small>Independent municipalities</small></button>
+<button data-tier="upper" aria-pressed="false"><img class="coverage" alt="" src="coverage-upper.png"><span><i class="upper"></i>Upper tier</span><strong>30</strong><small>Counties and regions</small></button>
+</section>
+<footer><a href="https://data.ontario.ca/dataset/municipal-boundaries" target="_blank" rel="noopener">Land Information Ontario ↗</a><span>Generalized municipal boundaries</span></footer>
 </main></body></html>

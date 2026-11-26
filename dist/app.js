@@ -9,6 +9,11 @@ L.control.zoom({ position: 'topright' }).addTo(map);
 L.control.scale({ position: 'bottomright', imperial: false }).addTo(map);
 map.attributionControl.addAttribution('<a href="https://data.ontario.ca/dataset/municipal-boundaries">Land Information Ontario</a>');
 
+// A georeferenced Esri overview keeps the opening satellite view available while tiles load.
+map.createPane('regionalImagery').style.zIndex = 190;
+const regionalImagery = L.imageOverlay('caledon-region.jpg', [[43.37985993018361, -80.99999999999996], [44.280137973118165, -78.83999999999997]], {
+  pane: 'regionalImagery', interactive: false
+}).addTo(map);
 const satellite = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
   attribution: 'Imagery © Esri and contributors', maxZoom: 16
 }).addTo(map);
@@ -20,6 +25,7 @@ const boundaries = L.featureGroup().addTo(map);
 const entries = new Map();
 let activeTier = 'all';
 let selected;
+let mapLabel;
 let provinceBounds;
 const search = $('#search');
 const searchSubmit = $('#search-submit');
@@ -37,12 +43,12 @@ function normalize(text) {
 
 function style(tier, highlighted) {
   return {
-    color: highlighted ? '#fff3bc' : colours[tier],
-    fillColor: colours[tier],
+    color: highlighted ? '#e0ff99' : colours[tier],
+    fillColor: highlighted ? '#c4ee73' : colours[tier],
     weight: highlighted ? 3 : tier === 'upper' ? 1.65 : 1,
-    opacity: 0.92,
+    opacity: highlighted ? 1 : 0.55,
     dashArray: !highlighted && tier === 'upper' ? '5 4' : null,
-    fillOpacity: highlighted ? 0.34 : tier === 'upper' && activeTier === 'all' ? 0 : 0.17
+    fillOpacity: highlighted ? 0.34 : tier === 'upper' && activeTier === 'all' ? 0 : 0.06
   };
 }
 
@@ -51,18 +57,27 @@ function select(entry, zoom) {
     selected.layer.setStyle(style(selected.tier, false));
     selected.button.removeAttribute('aria-current');
   }
+  if (mapLabel) mapLabel.remove();
   selected = entry;
   selection.replaceChildren();
   selection.hidden = !entry;
   if (!entry) return;
   const title = document.createElement('strong');
-  title.textContent = entry.name;
+  title.textContent = entry.shortName;
+  const tierLabel = document.createElement('small');
+  tierLabel.textContent = tierNames[entry.tier];
+  const center = entry.layer.getBounds().getCenter();
+  const labelText = document.createElement('span');
+  labelText.textContent = entry.shortName;
+  mapLabel = L.tooltip({ permanent: true, direction: 'center', className: 'map-name' })
+    .setLatLng(center).setContent(labelText).addTo(map);
   const detail = document.createElement('div');
-  detail.textContent = tierNames[entry.tier] + ' · Municipal ID ' + entry.id;
+  detail.textContent = center.lat.toFixed(3) + '° N · ' + Math.abs(center.lng).toFixed(3) + '° W';
   const clear = document.createElement('button');
-  clear.textContent = 'Clear selection';
+  clear.textContent = '×';
+  clear.setAttribute('aria-label', 'Clear selection');
   clear.onclick = () => select(undefined, false);
-  selection.append(title, detail, clear);
+  selection.append(tierLabel, title, detail, clear);
   entry.layer.setStyle(style(entry.tier, true)).bringToFront();
   entry.button.setAttribute('aria-current', 'true');
   if (zoom) {
@@ -137,9 +152,11 @@ function fitOntario() {
   if (provinceBounds) map.fitBounds(provinceBounds, { padding: [18, 18] });
 }
 
-$('#reset').onclick = fitOntario;
+$('#reset').onclick = () => { select(undefined, false); fitOntario(); };
 $('#basemap').onclick = (event) => {
   const wasSatellite = map.hasLayer(satellite);
+  if (wasSatellite) regionalImagery.remove();
+  else regionalImagery.addTo(map);
   map.removeLayer(wasSatellite ? satellite : dark);
   map.addLayer(wasSatellite ? dark : satellite);
   event.currentTarget.textContent = wasSatellite ? 'Dark map' : 'Satellite';
@@ -199,7 +216,11 @@ async function load() {
   search.disabled = false;
   renderResults();
   renderMap();
-  fitOntario();
+  const initial = entries.get('lower-21024');
+  if (initial) {
+    map.fitBounds(initial.layer.getBounds(), { padding: [42, 62], maxZoom: 11, animate: false });
+    select(initial, false);
+  } else fitOntario();
 }
 
 load().catch((error) => {
