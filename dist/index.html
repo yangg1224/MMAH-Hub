@@ -1,0 +1,19 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="Explore Ontario’s 444 municipal boundaries by name and tier."><title>Municipal Atlas · Ontario</title><link rel="stylesheet" href="leaflet.css"><link rel="stylesheet" href="style.css"><script defer src="leaflet.js"></script><script defer src="app.js"></script></head>
+<body>
+<header><div class="brand"><span class="logo" aria-hidden="true">◇</span><div>Municipal Atlas<small>ONTARIO BOUNDARY EXPLORER</small></div></div><a href="https://data.ontario.ca/dataset/municipal-boundaries" target="_blank" rel="noopener">Data sources ↗</a></header>
+<main>
+<section class="intro"><div><div class="eyebrow">ONTARIO, CANADA</div><h1>Municipal boundaries</h1><p>Explore Ontario’s municipalities by name, location and tier.</p></div><button id="download" disabled>↓ &nbsp; Download GeoJSON</button></section>
+<section class="stats" aria-label="Municipality counts">
+<button data-tier="all" aria-pressed="true"><span>All municipalities</span><strong>444</strong><small class="accent">Province-wide coverage</small></button>
+<button data-tier="upper" aria-pressed="false"><span><i class="upper"></i> Upper tier</span><strong>30</strong><small>Counties and regions</small></button>
+<button data-tier="lower" aria-pressed="false"><span><i class="lower"></i> Lower tier</span><strong>241</strong><small>Part of an upper tier</small></button>
+<button data-tier="single" aria-pressed="false"><span><i class="single"></i> Single tier</span><strong>173</strong><small>Independent municipalities</small></button>
+</section>
+<section class="work">
+<aside><div class="directory"><h2>Municipal directory</h2><label class="search"><span aria-hidden="true">⌕</span><input id="search" type="search" placeholder="Search municipalities…" aria-label="Search municipalities"></label><div id="status" role="status">Loading boundaries…</div></div><ul id="list" aria-label="Matching municipalities"></ul></aside>
+<div class="map-panel"><div class="map-head"><h2>Boundary map</h2><div><button id="basemap" aria-pressed="true">Satellite</button> <button id="reset">Fit Ontario</button></div></div><div class="map-shell"><div id="map" aria-label="Interactive map of Ontario municipalities"></div><div class="legend"><span><i class="upper"></i> Upper tier</span><span><i class="lower"></i> Lower tier</span><span><i class="single"></i> Single tier</span></div><div class="selection" id="selection" hidden></div></div></div>
+</section>
+<footer><span>Boundary source · Land Information Ontario</span><span>Geometry simplified for web display</span></footer>
+</main></body></html>
