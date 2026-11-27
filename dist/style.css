@@ -54,12 +54,9 @@ header {
 .logo {
   width: 18px;
   height: 18px;
+  flex: none;
   border-radius: 5px;
   background: var(--accent);
-  overflow: hidden;
-  font-size: 0;
-  line-height: 0;
-  color: transparent;
 }
 
 .header-place {
