@@ -47,7 +47,6 @@ let matches = [];
 const status = $('#status');
 const list = $('#list');
 const selection = $('#selection');
-const download = $('#download');
 
 function normalize(text) {
   return text.normalize('NFD').replace(/\p{Diacritic}/gu, '').toLowerCase().replace(/[^\p{Letter}\p{Number}]+/gu, ' ').trim();
@@ -307,7 +306,7 @@ async function showLevel(initialView = false) {
   provinceBounds = undefined;
   boundaries.clearLayers();
   search.value = '';
-  search.disabled = download.disabled = searchSubmit.disabled = true;
+  search.disabled = searchSubmit.disabled = true;
   clearSearch.hidden = true;
   list.replaceChildren();
   search.setAttribute('aria-label', both ? 'Search municipalities and service managers' : service ? 'Search service manager by name' : 'Search municipality by name');
@@ -332,7 +331,7 @@ async function showLevel(initialView = false) {
     provinceBounds.extend(dataset.bounds);
     for (const [id, record] of dataset.records) entries.set(id, record);
   }
-  search.disabled = download.disabled = false;
+  search.disabled = false;
   setTier('all');
   const initial = entries.get('lower-21024');
   if (initialView && initial) {
@@ -343,22 +342,4 @@ async function showLevel(initialView = false) {
 }
 
 level.onchange = () => showLevel();
-download.onclick = () => {
-  const link = document.createElement('a');
-  if (level.value === 'both') {
-    const features = [...entries.values()].map(entry => entry.feature);
-    const blob = new Blob([JSON.stringify({ type: 'FeatureCollection', features,
-      attribution: 'Land Information Ontario and MMAH; generalized municipal and CMSM/DSSAB boundaries.'
-    })], { type: 'application/geo+json' });
-    const url = URL.createObjectURL(blob);
-    link.href = url;
-    link.download = 'ontario-overlapping-boundaries.geojson';
-    link.click();
-    setTimeout(() => URL.revokeObjectURL(url), 1000);
-    return;
-  }
-  link.href = files[level.value];
-  link.download = 'ontario-' + files[level.value];
-  link.click();
-};
 showLevel(true);

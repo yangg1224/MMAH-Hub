@@ -95,18 +95,6 @@ h2 {
   letter-spacing: -0.02em;
 }
 
-#download {
-  border: 1px solid var(--line-strong);
-  background: var(--panel);
-  border-radius: 8px;
-  font-size: 13px;
-  font-weight: 560;
-  padding: 8px 12px;
-}
-
-#download span { color: var(--accent); margin-right: 6px; }
-#download:hover:not(:disabled) { border-color: var(--accent); }
-
 .work {
   display: grid;
   grid-template-columns: 320px 1fr;
@@ -486,5 +474,4 @@ a { color: inherit; }
   .stats { grid-template-columns: 1fr 1fr; }
   .stats strong { font-size: 22px; }
   .selection strong { font-size: 18px; }
-  #download { padding: 7px 10px; font-size: 12px; }
 }
