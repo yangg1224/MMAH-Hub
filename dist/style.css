@@ -268,30 +268,6 @@ i {
   gap: 8px;
 }
 
-.segmented {
-  display: flex;
-  padding: 3px;
-  border: 1px solid var(--line);
-  border-radius: 10px;
-  background: rgba(255, 255, 255, 0.94);
-  box-shadow: var(--shadow);
-}
-
-.segmented button {
-  border: 0;
-  border-radius: 7px;
-  background: transparent;
-  padding: 6px 10px;
-  font-size: 13px;
-  font-weight: 560;
-  color: var(--muted);
-}
-
-.segmented button[aria-pressed=true] {
-  background: var(--accent);
-  color: #fff;
-}
-
 #reset {
   border: 1px solid var(--line);
   border-radius: 10px;

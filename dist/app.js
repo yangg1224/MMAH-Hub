@@ -17,15 +17,6 @@ const regionalImagery = L.imageOverlay('caledon-region.jpg', [[43.37985993018361
 const satellite = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
   attribution: 'Imagery © Esri and contributors', maxZoom: 16
 }).addTo(map);
-map.createPane('darkLabels');
-map.getPane('darkLabels').style.zIndex = 450;
-map.getPane('darkLabels').style.pointerEvents = 'none';
-const dark = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}', {
-  attribution: 'Tiles © Esri, HERE, Garmin, FAO, NOAA, USGS', maxZoom: 16
-});
-const darkLabels = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Reference/MapServer/tile/{z}/{y}/{x}', {
-  pane: 'darkLabels', maxZoom: 16
-});
 const boundaries = L.featureGroup().addTo(map);
 const level = $('#level');
 const datasets = new Map();
@@ -212,24 +203,6 @@ function fitOntario() {
 }
 
 $('#reset').onclick = () => { select(undefined, false); fitOntario(); };
-function setBasemap(mode) {
-  const satelliteOn = mode === 'satellite';
-  if (satelliteOn) {
-    if (!map.hasLayer(regionalImagery)) regionalImagery.addTo(map);
-    if (map.hasLayer(dark)) map.removeLayer(dark);
-    if (map.hasLayer(darkLabels)) map.removeLayer(darkLabels);
-    if (!map.hasLayer(satellite)) satellite.addTo(map);
-  } else {
-    if (map.hasLayer(regionalImagery)) regionalImagery.remove();
-    if (map.hasLayer(satellite)) map.removeLayer(satellite);
-    if (!map.hasLayer(dark)) dark.addTo(map);
-    if (!map.hasLayer(darkLabels)) darkLabels.addTo(map);
-  }
-  $('#basemap-satellite').setAttribute('aria-pressed', String(satelliteOn));
-  $('#basemap-dark').setAttribute('aria-pressed', String(!satelliteOn));
-}
-$('#basemap-satellite').onclick = () => setBasemap('satellite');
-$('#basemap-dark').onclick = () => setBasemap('dark');
 search.addEventListener('input', renderResults);
 $('#search-form').addEventListener('submit', (event) => {
   event.preventDefault();
