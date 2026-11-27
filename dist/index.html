@@ -6,9 +6,9 @@
 <link rel="stylesheet" href="leaflet.css"><link rel="stylesheet" href="style.css">
 <script defer src="leaflet.js"></script><script defer src="app.js"></script></head>
 <body>
-<header><div class="brand"><span class="logo" aria-hidden="true">≋</span>Municipal Atlas</div><span class="header-place">Ontario <span>/</span> Canada</span></header>
+<header><div class="brand"><span class="logo" aria-hidden="true"></span>Municipal Atlas</div><span class="header-place">Ontario <span>/</span> Canada</span></header>
 <main>
-<div class="intro"><h1>Boundary explorer</h1><button id="download" disabled><span aria-hidden="true">↓</span> Export GeoJSON</button></div>
+<div class="intro"><h1>Boundary explorer</h1></div>
 <section class="work" aria-label="Municipal boundary explorer">
 <aside>
 <div class="directory"><label class="level-label" for="level">Boundary layer</label>
@@ -22,7 +22,7 @@
 </aside>
 <div class="map-panel">
 <div id="map" aria-label="Interactive map of Ontario boundary layers"></div>
-<div class="map-tools"><button id="basemap" aria-pressed="true">Satellite</button><button id="reset">Fit Ontario</button></div>
+<div class="map-tools"><button type="button" id="reset">Fit Ontario</button></div>
 <div id="overlap-legend" hidden><span>Municipal boundary</span><span>Service manager</span></div>
 <div id="selection" class="selection" hidden></div>
 </div>

@@ -1,0 +1,10 @@
+.venv-tools/
+__pycache__/
+*.pyc
+tools/source/*.geojson
+tools/source/gap-cache.wkb.json
+tools/source/overlay-cache.json
+tools/source/land-cache.json
+tools/*.log
+tools/_probe.py
+tests/node_modules/

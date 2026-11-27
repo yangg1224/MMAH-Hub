@@ -1,0 +1,738 @@
+{
+ "strokePx": 3,
+ "points": [
+  {
+   "id": "nested-interior",
+   "note": "Brampton: lower tier inside Peel upper inside Peel CMSM",
+   "lng": -79.751491,
+   "lat": 43.71777,
+   "zoom": 9,
+   "contains": [
+    "manager-26",
+    "upper-21000",
+    "lower-21010"
+   ],
+   "visible": [
+    "manager-26",
+    "upper-21000",
+    "lower-21010"
+   ],
+   "border": false,
+   "expected": [
+    {
+     "id": "manager-26",
+     "name": "Peel",
+     "tier": "CMSM",
+     "parent": null
+    },
+    {
+     "id": "upper-21000",
+     "name": "Peel",
+     "tier": "upper",
+     "parent": "manager-26"
+    },
+    {
+     "id": "lower-21010",
+     "name": "Brampton",
+     "tier": "lower",
+     "parent": "manager-26"
+    }
+   ]
+  },
+  {
+   "id": "single-interior",
+   "note": "Downtown Toronto: single tier = CMSM",
+   "lng": -79.3832,
+   "lat": 43.6532,
+   "zoom": 9,
+   "contains": [
+    "manager-33",
+    "single-20002"
+   ],
+   "visible": [
+    "manager-33",
+    "single-20002"
+   ],
+   "border": false,
+   "expected": [
+    {
+     "id": "manager-33",
+     "name": "Toronto",
+     "tier": "CMSM",
+     "parent": null
+    },
+    {
+     "id": "single-20002",
+     "name": "Toronto",
+     "tier": "single",
+     "parent": "manager-33"
+    }
+   ]
+  },
+  {
+   "id": "north-single",
+   "note": "Timmins: single tier inside Cochrane DSSAB",
+   "lng": -81.269806,
+   "lat": 48.408045,
+   "zoom": 9,
+   "contains": [
+    "manager-39",
+    "single-56027"
+   ],
+   "visible": [
+    "manager-39",
+    "single-56027"
+   ],
+   "border": false,
+   "expected": [
+    {
+     "id": "manager-39",
+     "name": "Cochrane",
+     "tier": "DSSAB",
+     "parent": null
+    },
+    {
+     "id": "single-56027",
+     "name": "Timmins",
+     "tier": "single",
+     "parent": "manager-39"
+    }
+   ]
+  },
+  {
+   "id": "unorganized",
+   "note": "Unorganized Kenora district: DSSAB only, no municipality",
+   "lng": -88.0,
+   "lat": 52.0,
+   "zoom": 6,
+   "contains": [
+    "manager-40"
+   ],
+   "visible": [
+    "manager-40"
+   ],
+   "border": false,
+   "expected": [
+    {
+     "id": "manager-40",
+     "name": "Kenora",
+     "tier": "DSSAB",
+     "parent": null
+    }
+   ]
+  },
+  {
+   "id": "renamed-cmsm",
+   "note": "Strathroy-Caradoc: Middlesex upper, served by London CMSM",
+   "lng": -81.530432,
+   "lat": 42.881935,
+   "zoom": 9,
+   "contains": [
+    "manager-19",
+    "upper-39000",
+    "lower-39013"
+   ],
+   "visible": [
+    "manager-19",
+    "upper-39000",
+    "lower-39013"
+   ],
+   "border": false,
+   "expected": [
+    {
+     "id": "manager-19",
+     "name": "London",
+     "tier": "CMSM",
+     "parent": null
+    },
+    {
+     "id": "upper-39000",
+     "name": "Middlesex",
+     "tier": "upper",
+     "parent": "manager-19"
+    },
+    {
+     "id": "lower-39013",
+     "name": "Strathroy-Caradoc",
+     "tier": "lower",
+     "parent": "manager-19"
+    }
+   ]
+  },
+  {
+   "id": "haliburton",
+   "note": "Haliburton county lower tier, served by Kawartha Lakes CMSM",
+   "lng": -78.4063,
+   "lat": 45.211635,
+   "zoom": 9,
+   "contains": [
+    "manager-13",
+    "upper-46000",
+    "lower-46024"
+   ],
+   "visible": [
+    "manager-13",
+    "upper-46000",
+    "lower-46024"
+   ],
+   "border": false,
+   "expected": [
+    {
+     "id": "manager-13",
+     "name": "Kawartha Lakes",
+     "tier": "CMSM",
+     "parent": null
+    },
+    {
+     "id": "upper-46000",
+     "name": "Haliburton",
+     "tier": "upper",
+     "parent": "manager-13"
+    },
+    {
+     "id": "lower-46024",
+     "name": "Dysart Et Al",
+     "tier": "lower",
+     "parent": "manager-13"
+    }
+   ]
+  },
+  {
+   "id": "carve-out",
+   "note": "Sault Ste. Marie: carved out of Algoma district into its own DSSAB",
+   "lng": -84.368585,
+   "lat": 46.53274,
+   "zoom": 9,
+   "contains": [
+    "manager-45",
+    "single-57061"
+   ],
+   "visible": [
+    "manager-45",
+    "single-57061"
+   ],
+   "border": false,
+   "expected": [
+    {
+     "id": "manager-45",
+     "name": "Sault Ste. Marie",
+     "tier": "DSSAB",
+     "parent": null
+    },
+    {
+     "id": "single-57061",
+     "name": "Sault Ste. Marie",
+     "tier": "single",
+     "parent": "manager-45"
+    }
+   ]
+  },
+  {
+   "id": "cross-district",
+   "note": "West Nipissing: Sudbury district, Nipissing DSSAB",
+   "lng": -79.962457,
+   "lat": 46.410165,
+   "zoom": 9,
+   "contains": [
+    "manager-42",
+    "single-48050"
+   ],
+   "visible": [
+    "manager-42",
+    "single-48050"
+   ],
+   "border": false,
+   "expected": [
+    {
+     "id": "manager-42",
+     "name": "Nipissing",
+     "tier": "DSSAB",
+     "parent": null
+    },
+    {
+     "id": "single-48050",
+     "name": "West Nipissing",
+     "tier": "single",
+     "parent": "manager-42"
+    }
+   ]
+  },
+  {
+   "id": "border-lower",
+   "note": "Mississauga / Brampton shared border (same upper, same CMSM)",
+   "lng": -79.656275,
+   "lat": 43.721925,
+   "zoom": 9,
+   "contains": [
+    "manager-26",
+    "upper-21000",
+    "lower-21005"
+   ],
+   "visible": [
+    "manager-26",
+    "upper-21000",
+    "lower-21010",
+    "lower-21005"
+   ],
+   "border": true,
+   "expected": [
+    {
+     "id": "manager-26",
+     "name": "Peel",
+     "tier": "CMSM",
+     "parent": null
+    },
+    {
+     "id": "upper-21000",
+     "name": "Peel",
+     "tier": "upper",
+     "parent": "manager-26"
+    },
+    {
+     "id": "lower-21010",
+     "name": "Brampton",
+     "tier": "lower",
+     "parent": "manager-26"
+    },
+    {
+     "id": "lower-21005",
+     "name": "Mississauga",
+     "tier": "lower",
+     "parent": "manager-26"
+    }
+   ]
+  },
+  {
+   "id": "border-cmsm",
+   "note": "Toronto / Vaughan border: municipal and CMSM borders coincide",
+   "lng": -79.6393,
+   "lat": 43.74984,
+   "zoom": 9,
+   "contains": [
+    "manager-26",
+    "manager-37",
+    "upper-19000",
+    "lower-21010",
+    "single-20002",
+    "lower-19028"
+   ],
+   "visible": [
+    "manager-26",
+    "manager-33",
+    "manager-37",
+    "upper-21000",
+    "upper-19000",
+    "lower-21010",
+    "single-20002",
+    "lower-19028"
+   ],
+   "border": true,
+   "expected": [
+    {
+     "id": "manager-26",
+     "name": "Peel",
+     "tier": "CMSM",
+     "parent": null
+    },
+    {
+     "id": "manager-33",
+     "name": "Toronto",
+     "tier": "CMSM",
+     "parent": null
+    },
+    {
+     "id": "manager-37",
+     "name": "York",
+     "tier": "CMSM",
+     "parent": null
+    },
+    {
+     "id": "upper-21000",
+     "name": "Peel",
+     "tier": "upper",
+     "parent": "manager-26"
+    },
+    {
+     "id": "upper-19000",
+     "name": "York",
+     "tier": "upper",
+     "parent": "manager-37"
+    },
+    {
+     "id": "lower-21010",
+     "name": "Brampton",
+     "tier": "lower",
+     "parent": "manager-26"
+    },
+    {
+     "id": "single-20002",
+     "name": "Toronto",
+     "tier": "single",
+     "parent": "manager-33"
+    },
+    {
+     "id": "lower-19028",
+     "name": "Vaughan",
+     "tier": "lower",
+     "parent": "manager-37"
+    }
+   ]
+  },
+  {
+   "id": "triple-junction",
+   "note": "Toronto / Vaughan / Brampton junction",
+   "lng": -79.639285,
+   "lat": 43.749837,
+   "zoom": 9,
+   "contains": [
+    "manager-26",
+    "single-20002"
+   ],
+   "visible": [
+    "manager-26",
+    "manager-33",
+    "manager-37",
+    "upper-21000",
+    "upper-19000",
+    "lower-21010",
+    "single-20002",
+    "lower-19028"
+   ],
+   "border": true,
+   "expected": [
+    {
+     "id": "manager-26",
+     "name": "Peel",
+     "tier": "CMSM",
+     "parent": null
+    },
+    {
+     "id": "manager-33",
+     "name": "Toronto",
+     "tier": "CMSM",
+     "parent": null
+    },
+    {
+     "id": "manager-37",
+     "name": "York",
+     "tier": "CMSM",
+     "parent": null
+    },
+    {
+     "id": "upper-21000",
+     "name": "Peel",
+     "tier": "upper",
+     "parent": "manager-26"
+    },
+    {
+     "id": "upper-19000",
+     "name": "York",
+     "tier": "upper",
+     "parent": "manager-37"
+    },
+    {
+     "id": "lower-21010",
+     "name": "Brampton",
+     "tier": "lower",
+     "parent": "manager-26"
+    },
+    {
+     "id": "single-20002",
+     "name": "Toronto",
+     "tier": "single",
+     "parent": "manager-33"
+    },
+    {
+     "id": "lower-19028",
+     "name": "Vaughan",
+     "tier": "lower",
+     "parent": "manager-37"
+    }
+   ]
+  },
+  {
+   "id": "enclave",
+   "note": "Guelph: single tier enclave, Wellington upper must NOT appear",
+   "lng": -80.256597,
+   "lat": 43.529555,
+   "zoom": 9,
+   "contains": [
+    "manager-35",
+    "single-23008"
+   ],
+   "visible": [
+    "manager-35",
+    "single-23008"
+   ],
+   "border": false,
+   "expected": [
+    {
+     "id": "manager-35",
+     "name": "Wellington",
+     "tier": "CMSM",
+     "parent": null
+    },
+    {
+     "id": "single-23008",
+     "name": "Guelph",
+     "tier": "single",
+     "parent": "manager-35"
+    }
+   ]
+  },
+  {
+   "id": "enclave-edge",
+   "note": "Orillia / Severn border: enclave edge inside Simcoe",
+   "lng": -79.42973,
+   "lat": 44.634795,
+   "zoom": 9,
+   "contains": [
+    "manager-30",
+    "upper-43000",
+    "lower-43080"
+   ],
+   "visible": [
+    "manager-30",
+    "upper-43000",
+    "single-43052",
+    "lower-43080"
+   ],
+   "border": true,
+   "expected": [
+    {
+     "id": "manager-30",
+     "name": "Simcoe",
+     "tier": "CMSM",
+     "parent": null
+    },
+    {
+     "id": "upper-43000",
+     "name": "Simcoe",
+     "tier": "upper",
+     "parent": "manager-30"
+    },
+    {
+     "id": "single-43052",
+     "name": "Orillia",
+     "tier": "single",
+     "parent": "manager-30"
+    },
+    {
+     "id": "lower-43080",
+     "name": "Severn",
+     "tier": "lower",
+     "parent": "manager-30"
+    }
+   ]
+  },
+  {
+   "id": "reserve-south",
+   "note": "Ohsweken, Six Nations of the Grand River: hole in both layers",
+   "lng": -80.1155,
+   "lat": 43.068,
+   "zoom": 9,
+   "contains": [],
+   "visible": [
+    "manager-1",
+    "single-29002"
+   ],
+   "border": false,
+   "expected": []
+  },
+  {
+   "id": "enclave-hole",
+   "note": "Largest hole in Brant County is the City of Brantford enclave",
+   "lng": -80.256337,
+   "lat": 43.150595,
+   "zoom": 9,
+   "contains": [
+    "manager-1",
+    "single-29006"
+   ],
+   "visible": [
+    "manager-1",
+    "single-29006"
+   ],
+   "border": false,
+   "expected": [
+    {
+     "id": "manager-1",
+     "name": "Brantford",
+     "tier": "CMSM",
+     "parent": null
+    },
+    {
+     "id": "single-29006",
+     "name": "Brantford",
+     "tier": "single",
+     "parent": "manager-1"
+    }
+   ]
+  },
+  {
+   "id": "reserve-north",
+   "note": "Wikwemikong (Manitoulin): reserve hole",
+   "lng": -81.75,
+   "lat": 45.78,
+   "zoom": 9,
+   "contains": [],
+   "visible": [],
+   "border": false,
+   "expected": []
+  },
+  {
+   "id": "lake-municipal",
+   "note": "Lake Ontario off Toronto: municipal water extent, no CMSM land",
+   "lng": -79.38,
+   "lat": 43.55,
+   "zoom": 9,
+   "contains": [
+    "single-20002"
+   ],
+   "visible": [
+    "single-20002"
+   ],
+   "border": false,
+   "expected": [
+    {
+     "id": "single-20002",
+     "name": "Toronto",
+     "tier": "single",
+     "parent": "manager-33"
+    }
+   ]
+  },
+  {
+   "id": "open-water",
+   "note": "Middle of Lake Superior: no boundary",
+   "lng": -87.5,
+   "lat": 47.6,
+   "zoom": 6,
+   "contains": [],
+   "visible": [],
+   "border": false,
+   "expected": []
+  },
+  {
+   "id": "outside-quebec",
+   "note": "Montreal, Quebec: outside Ontario",
+   "lng": -73.57,
+   "lat": 45.5,
+   "zoom": 6,
+   "contains": [],
+   "visible": [],
+   "border": false,
+   "expected": []
+  },
+  {
+   "id": "outside-michigan",
+   "note": "Detroit, Michigan: outside Ontario",
+   "lng": -83.05,
+   "lat": 42.33,
+   "zoom": 9,
+   "contains": [],
+   "visible": [],
+   "border": false,
+   "expected": []
+  },
+  {
+   "id": "geometry-split",
+   "note": "Hanover sliver the CMSM layer puts in Bruce (regulation: Grey)",
+   "lng": -81.036409,
+   "lat": 44.156557,
+   "zoom": 12,
+   "contains": [
+    "manager-2",
+    "upper-42000",
+    "lower-42029"
+   ],
+   "visible": [
+    "manager-2",
+    "upper-42000",
+    "lower-42029"
+   ],
+   "border": false,
+   "expected": [
+    {
+     "id": "manager-2",
+     "name": "Bruce",
+     "tier": "CMSM",
+     "parent": null
+    },
+    {
+     "id": "upper-42000",
+     "name": "Grey",
+     "tier": "upper",
+     "parent": "manager-8"
+    },
+    {
+     "id": "lower-42029",
+     "name": "Hanover",
+     "tier": "lower",
+     "parent": "manager-8"
+    }
+   ]
+  },
+  {
+   "id": "island",
+   "note": "Pelee Island: single tier island, Windsor CMSM",
+   "lng": -82.658893,
+   "lat": 41.77455,
+   "zoom": 9,
+   "contains": [
+    "manager-36",
+    "single-37001"
+   ],
+   "visible": [
+    "manager-36",
+    "single-37001"
+   ],
+   "border": false,
+   "expected": [
+    {
+     "id": "manager-36",
+     "name": "Windsor",
+     "tier": "CMSM",
+     "parent": null
+    },
+    {
+     "id": "single-37001",
+     "name": "Pelee",
+     "tier": "single",
+     "parent": "manager-36"
+    }
+   ]
+  },
+  {
+   "id": "island-drift",
+   "note": "Wolfe Island (Frontenac Islands): generalization drops CMSM coverage",
+   "lng": -76.33,
+   "lat": 44.18,
+   "zoom": 9,
+   "contains": [
+    "upper-10000",
+    "lower-10002"
+   ],
+   "visible": [
+    "manager-14",
+    "upper-10000",
+    "lower-10002"
+   ],
+   "border": false,
+   "expected": [
+    {
+     "id": "upper-10000",
+     "name": "Frontenac",
+     "tier": "upper",
+     "parent": "manager-14"
+    },
+    {
+     "id": "lower-10002",
+     "name": "Frontenac Islands",
+     "tier": "lower",
+     "parent": "manager-14"
+    }
+   ]
+  }
+ ]
+}
