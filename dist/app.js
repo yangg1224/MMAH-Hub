@@ -1,7 +1,7 @@
 'use strict';
 
 const $ = (selector) => document.querySelector(selector);
-const colours = { CMSM: '#b6b0ff', DSSAB: '#81c8fa', upper: '#f3cb79', lower: '#c6f582', single: '#75dfce' };
+const colours = { CMSM: '#9b8cff', DSSAB: '#5eb0d4', upper: '#e0b15a', lower: '#9cbf62', single: '#5ec4ae' };
 const tierNames = { CMSM: 'CMSM', DSSAB: 'DSSAB', upper: 'Upper tier', lower: 'Lower tier', single: 'Single tier' };
 const map = L.map('map', { zoomControl: false, preferCanvas: true, scrollWheelZoom: false })
   .setView([49.1, -85], 5);
@@ -17,9 +17,14 @@ const regionalImagery = L.imageOverlay('caledon-region.jpg', [[43.37985993018361
 const satellite = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
   attribution: 'Imagery © Esri and contributors', maxZoom: 16
 }).addTo(map);
-const dark = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-  attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors © <a href="https://carto.com/attributions">CARTO</a>',
-  maxZoom: 19
+map.createPane('darkLabels');
+map.getPane('darkLabels').style.zIndex = 450;
+map.getPane('darkLabels').style.pointerEvents = 'none';
+const dark = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}', {
+  attribution: 'Tiles © Esri, HERE, Garmin, FAO, NOAA, USGS', maxZoom: 16
+});
+const darkLabels = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Reference/MapServer/tile/{z}/{y}/{x}', {
+  pane: 'darkLabels', maxZoom: 16
 });
 const boundaries = L.featureGroup().addTo(map);
 const level = $('#level');
@@ -51,7 +56,7 @@ function normalize(text) {
 function style(tier, highlighted) {
   if (level.value === 'both') {
     const manager = tier === 'CMSM' || tier === 'DSSAB';
-    const color = manager ? '#d8b1ff' : '#d6f59c';
+    const color = manager ? '#f0c36a' : '#f4f1e8';
     return {
       color, fillColor: color, opacity: highlighted ? 1 : 0.88,
       weight: manager ? 3.5 : highlighted ? 3 : 1.4,
@@ -60,8 +65,8 @@ function style(tier, highlighted) {
     };
   }
   return {
-    color: highlighted ? '#e0ff99' : colours[tier],
-    fillColor: highlighted ? '#c4ee73' : colours[tier],
+    color: highlighted ? '#ffffff' : colours[tier],
+    fillColor: highlighted ? '#ffffff' : colours[tier],
     weight: highlighted ? 3 : tier === 'upper' ? 1.65 : 1,
     opacity: highlighted ? 1 : 0.55,
     dashArray: !highlighted && tier === 'upper' ? '5 4' : null,
@@ -208,15 +213,24 @@ function fitOntario() {
 }
 
 $('#reset').onclick = () => { select(undefined, false); fitOntario(); };
-$('#basemap').onclick = (event) => {
-  const wasSatellite = map.hasLayer(satellite);
-  if (wasSatellite) regionalImagery.remove();
-  else regionalImagery.addTo(map);
-  map.removeLayer(wasSatellite ? satellite : dark);
-  map.addLayer(wasSatellite ? dark : satellite);
-  event.currentTarget.textContent = wasSatellite ? 'Dark map' : 'Satellite';
-  event.currentTarget.setAttribute('aria-pressed', String(!wasSatellite));
-};
+function setBasemap(mode) {
+  const satelliteOn = mode === 'satellite';
+  if (satelliteOn) {
+    if (!map.hasLayer(regionalImagery)) regionalImagery.addTo(map);
+    if (map.hasLayer(dark)) map.removeLayer(dark);
+    if (map.hasLayer(darkLabels)) map.removeLayer(darkLabels);
+    if (!map.hasLayer(satellite)) satellite.addTo(map);
+  } else {
+    if (map.hasLayer(regionalImagery)) regionalImagery.remove();
+    if (map.hasLayer(satellite)) map.removeLayer(satellite);
+    if (!map.hasLayer(dark)) dark.addTo(map);
+    if (!map.hasLayer(darkLabels)) darkLabels.addTo(map);
+  }
+  $('#basemap-satellite').setAttribute('aria-pressed', String(satelliteOn));
+  $('#basemap-dark').setAttribute('aria-pressed', String(!satelliteOn));
+}
+$('#basemap-satellite').onclick = () => setBasemap('satellite');
+$('#basemap-dark').onclick = () => setBasemap('dark');
 search.addEventListener('input', renderResults);
 $('#search-form').addEventListener('submit', (event) => {
   event.preventDefault();
